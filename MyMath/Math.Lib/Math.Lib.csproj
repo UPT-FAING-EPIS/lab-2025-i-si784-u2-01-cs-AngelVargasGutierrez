@@ -4,6 +4,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <Authors>AngelVargasGutierrez</Authors>
+    <Company>AngelVargasGutierrez</Company>
+    <Description>Librería para el cálculo de raíces cuadradas</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/AngelVargasGutierrez/MyMath</RepositoryUrl>
   </PropertyGroup>
 
 </Project>

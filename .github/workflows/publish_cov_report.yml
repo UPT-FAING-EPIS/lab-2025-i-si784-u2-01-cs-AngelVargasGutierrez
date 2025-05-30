@@ -1,0 +1,43 @@
+name: Publish Coverage Report
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Install ReportGenerator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
+    
+    - name: Build and Test
+      run: |
+        dotnet restore
+        dotnet test --collect:"XPlat Code Coverage"
+    
+    - name: Generate Coverage Report
+      run: |
+        reportgenerator "-reports:./*/*/*/coverage.cobertura.xml" "-targetdir:Coverage" -reporttypes:HTML
+    
+    - name: Create .nojekyll file
+      run: touch Coverage/.nojekyll
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GG }}
+        publish_dir: ./Coverage
+        destination_dir: coverage
+        force_orphan: true 

@@ -1,0 +1,38 @@
+name: Release and Publish NuGet
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+    
+    - name: Update version in project file
+      run: |
+        dotnet build /p:Version=${{ env.VERSION }}
+    
+    - name: Pack
+      run: dotnet pack --configuration Release --output nupkgs
+    
+    - name: Publish to GitHub Packages
+      run: dotnet nuget push nupkgs/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: nupkgs/*.nupkg
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
